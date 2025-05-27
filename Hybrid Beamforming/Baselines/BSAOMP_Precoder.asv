@@ -1,0 +1,80 @@
+function [FRF_, FBB_, WRF_, WBB_] = BSAOMP_Precoder(H, Chan, OFDM, BS, UE, OMP)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Transmit antenna number N
+Nt = BS.nAntenna;
+% Received antenna number M
+Nr = UE.nAntenna;
+% Number of RF chains
+NRF = OFDM.RFchain;
+% Number of OFDM symbols
+Ns = OFDM.numOFDMSym;
+% central frequency fc
+fc = Chan.fc;
+% bandwidth
+fs = OFDM.BW;
+% max time delay
+DelaySpread = Chan.delay_spread;
+% OFDM subcarrier numbers
+N = OFDM.nfft;
+if Chan.Squint
+    At = Chan.Atf;
+    Ar = Chan.Arf;
+else
+    At = Chan.Atfc;
+    Ar = Chan.Arfc;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% parfor k = 1:N
+%     if(rank(H(:,:,k))>=Ns)        
+%         [U,S,V] = svd(H(:,:,k));
+%         Fopt(:,:,k) = V([1:Nt],[1:Ns]);
+%         Wopt(:,:,k) = U([1:Nr],[1:Ns]);
+%     end
+% end
+% parfor k = 1:N
+%     [FRF_(:,:,k), FBB_(:,:,k)] = OMPAltMin(Fopt(:,:,k), NRF, At(:,:,k));
+%     % FBB_(:,:,k) = pinv(FRF)*FRF_(:,:,k)*FBB(:,:,k);
+% end
+% 
+% parfor k = 1:N
+%     FBB_(:,:,k) = sqrt(Ns) * FBB_(:,:,k) / norm(FRF_(:,:,k) * FBB_(:,:,k),'fro');
+% end
+% 
+% parfor k = 1:N
+%     [WRF_(:,:,k), WBB_(:,:,k)] = OMPAltMin(Wopt(:,:,k), NRF, Ar(:,:,k));
+%     % WBB_(:,:,k) = pinv(WRF)*WRF_(:,:,k)*WBB(:,:,k);
+% end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% BS side
+% FRF = OMP.FRF;
+% FBB = OMP.FBB;
+% [Nt, L] = size(FRF);
+% FRF_ = zeros(Nt, L, N);
+% 
+% for n=1:N
+%     fm = fs/(N)*(n-1-(N-1)/2);
+%     f=fc+fm;
+%     eta_m=f/fc;
+%     FRF_(:,:,n) = 1/sqrt(Nt)*exp(1i*angle(FRF)*eta_m);
+%     FBB_(:,:,n) = pinv(FRF)*FRF_(:,:,n)*FBB(:,:,n);
+% end
+% 
+% % UE side
+% WRF = OMP.WRF;
+% WBB = OMP.WBB;
+% [Nr, L] = size(WRF);
+% WRF_ = zeros(Nr, L, N);
+% for n=1:N
+%     fm = fs/(N)*(n-1-(N-1)/2);
+%     f=fc+fm;
+%     eta_m=f/fc;
+%     WRF_(:,:,n) = 1/sqrt(Nr)*exp(1i*angle(WRF)*eta_m);
+%     WBB_(:,:,n) = pinv(WRF)*WRF_(:,:,n)*WBB(:,:,n);
+% end
+% for n = 1:N
+%     FBB_(:,:,n) = sqrt(Ns) * FBB_(:,:,n) / norm(FRF_(:,:,n) * FBB_(:,:,n),'fro');
+%     WBB_(:,:,n) = sqrt(Ns) * WBB_(:,:,n) / norm(WRF_(:,:,n) * WBB_(:,:,n),'fro');
+% end
+end

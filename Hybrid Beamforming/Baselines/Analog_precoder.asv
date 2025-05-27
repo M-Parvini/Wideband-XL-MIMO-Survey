@@ -1,0 +1,12 @@
+function [wT, wR] = Analog_precoder(Chan, BS, UE)
+
+%%%
+gains = Chan.normalizedPathGains;
+
+BSAngle = Chan.BSangle;
+UEAngle = Chan.UEangle;
+%%% Steering vector modeling for BS
+wT = ArrayResponse(BS.angle,BS,Chan,Chan.lambda);
+
+%%% Steering vector modeling for UE
+wR = ArrayResponse(UE.angle,UE,Chan,Chan.lambda);
